@@ -156,9 +156,9 @@ app.post('/api/generate-sheet', async (req, res) => {
     let page = pdfDoc.addPage([612, 792]);
 
     const TEXT_BAND = 14;      // reserved bottom space
-    const FONT_SIZE = 9;       // larger text
-    const TOP_PADDING = 6;
-    const BOTTOM_PADDING = 4;
+    const FONT_SIZE = 8;       // larger text
+    const TOP_PADDING = 7;
+    const BOTTOM_PADDING = 3;
 
     let labelPosition = startIndex - 1;
 
@@ -212,15 +212,18 @@ app.post('/api/generate-sheet', async (req, res) => {
       });
 
       /* --- TEXT --- */
-
       const textWidth = font.widthOfTextAtSize(code, FONT_SIZE);
+      const textHeight = FONT_SIZE;
+
+      // Center text vertically inside TEXT_BAND
+      const textY = y + (TEXT_BAND - textHeight) / 2 + 1;
 
       page.drawText(code, {
         x: x + (LABEL - textWidth) / 2,
-        y: y + 4,
+        y: textY,
         size: FONT_SIZE,
         font
-      });
+      });	
     }
 
     const pdfBytes = await pdfDoc.save();
