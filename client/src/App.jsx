@@ -4,6 +4,7 @@ import QRCode from 'qrcode'
 export default function App() {
   const [prefix, setPrefix] = useState('T')
   const [count, setCount] = useState(1)
+  const [startIndex, setStartIndex] = useState(1)
   const [codes, setCodes] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -15,6 +16,8 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prefix, count: Number(count) })
       })
+
+      if (!res.ok) throw new Error('Allocation failed')
 
       const data = await res.json()
       setCodes(data.codes || [])
@@ -30,39 +33,34 @@ export default function App() {
       const res = await fetch('/api/generate-sheet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ codes })
-      });
+        body: JSON.stringify({ codes, startIndex })
+      })
 
-      if (!res.ok) {
-	throw new Error('Server error generating sheet');
-      }
+      if (!res.ok) throw new Error('Sheet generation failed')
 
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      window.open(url);
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      window.open(url)
     } catch (err) {
-      console.error(err);
-      alert('Sheet generation failed');
+      console.error(err)
+      alert('Sheet generation failed')
     }
   }
-
 
   return (
     <div>
       <div className="controls">
-        <h2>PLS601 QR Generator</h2>
-
-        <div className="print-instructions">
-          <h3>Print Settings</h3>
-          <ul>
-            <li>Printer: Any</li>
-            <li>Paper Size: Letter</li>
-            <li>Scale: 100% (Actual Size)</li>
-            <li>Margins: None</li>
-            <li>Disable Fit to Page</li>
-          </ul>
-        </div>
-
+        <h2>PLS601 QR Sheet Generator</h2>
+         <div className="print-instructions">
+           <h3>Print Settings</h3>
+           <ul>
+             <li>Printer: Any</li>
+             <li>Paper Size: Letter</li>
+             <li>Scale: 100% (Actual Size)</li>
+             <li>Margins: None</li>
+             <li>Disable Fit to Page</li>
+           </ul>
+         </div>
         <label>
           Prefix:
           <input
@@ -77,9 +75,20 @@ export default function App() {
           <input
             type="number"
             min={1}
-            max={100}
+            max={200}
             value={count}
             onChange={(e) => setCount(e.target.value)}
+          />
+        </label>
+
+        <label>
+          Start Label (1–63):
+          <input
+            type="number"
+            min={1}
+            max={63}
+            value={startIndex}
+            onChange={(e) => setStartIndex(Number(e.target.value))}
           />
         </label>
 
@@ -90,7 +99,6 @@ export default function App() {
         <button onClick={printSheet} disabled={!codes.length}>
           Print Sheet
         </button>
-
       </div>
 
       <div className="label-container">
@@ -114,9 +122,10 @@ function Label({ code }) {
   }, [code])
 
   return (
-    <div className="pls-label">
+    <div className="dymo-label">
       {src && <img src={src} alt={code} />}
       <div className="code-text">{code}</div>
     </div>
   )
 }
+
