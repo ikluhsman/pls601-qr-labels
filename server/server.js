@@ -155,10 +155,10 @@ app.post('/api/generate-sheet', async (req, res) => {
 
     let page = pdfDoc.addPage([612, 792]);
 
-    const TEXT_BAND = 14;      // reserved bottom space
+    const TEXT_BAND = 12;      // reserved bottom space
     const FONT_SIZE = 8;       // larger text
-    const TOP_PADDING = 7;
-    const BOTTOM_PADDING = 3;
+    const TOP_PADDING = 8;
+    const BOTTOM_PADDING = 2;
 
     let labelPosition = startIndex - 1;
 
@@ -216,7 +216,7 @@ app.post('/api/generate-sheet', async (req, res) => {
       const textHeight = FONT_SIZE;
 
       // Center text vertically inside TEXT_BAND
-      const textY = y + (TEXT_BAND - textHeight) / 2 + 1;
+      const textY = y + (TEXT_BAND - textHeight) / 2 + 2;
 
       page.drawText(code, {
         x: x + (LABEL - textWidth) / 2,

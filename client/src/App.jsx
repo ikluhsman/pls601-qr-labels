@@ -47,6 +47,30 @@ export default function App() {
     }
   }
 
+  async function downloadCalibration() {
+    try {
+      const res = await fetch('/api/test-grid');
+
+      if (!res.ok) throw new Error('Failed to fetch calibration sheet');
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'calibration-sheet.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert('Calibration download failed');
+    }
+  }
+
+
   return (
     <div>
       <div className="controls">
@@ -99,8 +123,12 @@ export default function App() {
         <button onClick={printSheet} disabled={!codes.length}>
           Print Sheet
         </button>
-      </div>
+	  <hr/>
+        <button onClick={downloadCalibration}>
+          Download Calibration Sheet
+        </button>
 
+      </div>
       <div className="label-container">
         {codes.map((code) => (
           <Label key={code} code={code} />
