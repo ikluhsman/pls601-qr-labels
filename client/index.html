@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PLS601 QR Generator</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 20px;
+      }
+
+      .print-instructions {
+        border: 2px solid #333;
+        padding: 10px;
+        margin-bottom: 15px;
+        background: #f2f2f2;
+      }
+
+      .print-instructions h3 {
+        margin-top: 0;
+      }
+
+      .pls-label {
+        width: 1in;
+        height: 1in;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        page-break-after: always;
+      }
+
+      .pls-label img {
+        width: 0.75in;
+        height: 0.75in;
+      }
+
+      .code-text {
+        font-size: 8pt;
+        margin-top: 2pt;
+        text-align: center;
+      }
+
+      @media print {
+        body { margin: 0; }
+        .controls { display: none; }
+      }
+
+      @page {
+        size: 1in 1in;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
