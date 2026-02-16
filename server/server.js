@@ -159,7 +159,7 @@ app.post('/api/generate-sheet', async (req, res) => {
     const TEXT_BAND = 12;
     const TEXT_GAP = 4;
     // QR
-    const BOTTOM_PADDING = 3;
+    const BOTTOM_PADDING = 4;
 
     let labelPosition = startIndex - 1;
 
@@ -202,7 +202,7 @@ app.post('/api/generate-sheet', async (req, res) => {
       const qrAvailable = LABEL - TOP_PADDING - TEXT_BAND - TEXT_GAP - BOTTOM_PADDING;
       const qrSize = qrAvailable;
 
-      const qrX = x + (LABEL - qrSize) / 2 + 2.83;
+      const qrX = x + (LABEL - qrSize) / 2;
       const qrY = y + BOTTOM_PADDING;
 
       page.drawImage(qrImage, {
@@ -220,7 +220,7 @@ app.post('/api/generate-sheet', async (req, res) => {
       const textY = y + BOTTOM_PADDING + qrSize + TEXT_GAP;
 
       page.drawText(code, {
-        x: x + (LABEL - textWidth) / 2 + 2.83,
+        x: x + (LABEL - textWidth) / 2,
         y: textY,
         size: FONT_SIZE,
         font
