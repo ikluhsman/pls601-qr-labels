@@ -89,9 +89,16 @@ export default function App() {
           Prefix:
           <input
             value={prefix}
-            maxLength={1}
-            onChange={(e) => setPrefix(e.target.value.toUpperCase())}
+            maxLength={3}
+            onChange={(e) =>
+              setPrefix(
+                e.target.value
+                  .toUpperCase()
+                  .replace(/[^A-Z0-9]/g, '')
+              )
+            }
           />
+
         </label>
 
         <label>

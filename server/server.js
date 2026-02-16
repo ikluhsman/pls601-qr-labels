@@ -245,33 +245,66 @@ app.post('/api/allocate-batch', async (req, res) => {
   try {
     const { prefix = 'T', count = 1 } = req.body;
 
-    const last = await db.get(
-      `SELECT id FROM labels ORDER BY id DESC LIMIT 1`
-    );
+    const cleanPrefix = String(prefix).toUpperCase();
 
-    let nextId = last ? last.id + 1 : 1;
-    const inserted = [];
-
-    for (let i = 0; i < count; i++) {
-      const padded = String(nextId).padStart(6, '0');
-      const code = `${prefix}-${padded}`;
-
-      await db.run(
-        `INSERT INTO labels (code) VALUES (?)`,
-        code
-      );
-
-      inserted.push(code);
-      nextId++;
+    if (!/^[A-Z0-9]{1,3}$/.test(cleanPrefix)) {
+      return res.status(400).json({ error: 'Prefix must be 1–3 alphanumeric characters' });
     }
 
-    res.json({ codes: inserted });
+    const n = Number(count);
+    if (!Number.isInteger(n) || n < 1 || n > 500) {
+      return res.status(400).json({ error: 'Count must be an integer between 1 and 500' });
+    }
 
+    const prefixLen = cleanPrefix.length;
+    const totalLen = prefixLen + 5;
+
+    // Match: PREFIX + exactly 5 digits
+    // Example for "T":  "T[0-9][0-9][0-9][0-9][0-9]"
+    const globPattern = `${cleanPrefix}[0-9][0-9][0-9][0-9][0-9]`;
+
+    // Get max numeric suffix for this exact prefix
+    const row = await db.get(
+      `
+      SELECT MAX(CAST(substr(code, ?) AS INTEGER)) AS max_num
+      FROM labels
+      WHERE code GLOB ?
+        AND length(code) = ?
+      `,
+      prefixLen + 1,     // SQLite substr is 1-based
+      globPattern,
+      totalLen
+    );
+
+    let nextNumber = (row?.max_num ?? 0) + 1;
+
+    // Allocate in a transaction so partial batches don't happen
+    await db.exec('BEGIN IMMEDIATE TRANSACTION');
+
+    const inserted = [];
+    for (let i = 0; i < n; i++) {
+      if (nextNumber > 99999) {
+        await db.exec('ROLLBACK');
+        return res.status(400).json({ error: 'Prefix exhausted (max 99999)' });
+      }
+
+      const code = `${cleanPrefix}${String(nextNumber).padStart(5, '0')}`;
+      await db.run(`INSERT INTO labels (code) VALUES (?)`, code);
+
+      inserted.push(code);
+      nextNumber++;
+    }
+
+    await db.exec('COMMIT');
+    res.json({ codes: inserted });
   } catch (err) {
+    try { await db.exec('ROLLBACK'); } catch {}
     console.error(err);
     res.status(500).json({ error: 'Allocation failed' });
   }
 });
+
+
 
 /* ---------------------------
    SPA FALLBACK
