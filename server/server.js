@@ -155,10 +155,10 @@ app.post('/api/generate-sheet', async (req, res) => {
 
     let page = pdfDoc.addPage([612, 792]);
 
-    const TEXT_BAND = 12;      // reserved bottom space
+    const TEXT_BAND = 14;      // reserved bottom space
     const FONT_SIZE = 8;       // larger text
     const TOP_PADDING = 6;
-    const BOTTOM_PADDING = 3;
+    const BOTTOM_PADDING = 4;
 
     let labelPosition = startIndex - 1;
 
@@ -201,7 +201,7 @@ app.post('/api/generate-sheet', async (req, res) => {
       const qrAvailable = LABEL - TEXT_BAND - TOP_PADDING - BOTTOM_PADDING;
       const qrSize = qrAvailable;
 
-      const qrX = x + (LABEL - qrSize) / 2;
+      const qrX = x + (LABEL - qrSize) / 2 + 2.83;
       const qrY = y + TEXT_BAND + BOTTOM_PADDING;
 
       page.drawImage(qrImage, {
@@ -219,7 +219,7 @@ app.post('/api/generate-sheet', async (req, res) => {
       const textY = y + (TEXT_BAND - textHeight) / 2 + 2;
 
       page.drawText(code, {
-        x: x + (LABEL - textWidth) / 2,
+        x: x + (LABEL - textWidth) / 2 + 2.83,
         y: textY,
         size: FONT_SIZE,
         font
