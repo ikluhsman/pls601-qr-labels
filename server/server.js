@@ -56,7 +56,7 @@ const LABELS_PER_PAGE = 63;
 const MARGIN_L = 22.68;   // your final calibrated value
 const MARGIN_T = 35.43;   // your final calibrated value
 const GAP_X = 8.50;
-const GAP_Y = 8.15;
+const GAP_Y = 8.50;
 
 /* ---------------------------
    HEALTH
@@ -154,11 +154,12 @@ app.post('/api/generate-sheet', async (req, res) => {
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
     let page = pdfDoc.addPage([612, 792]);
-
-    const TEXT_BAND = 14;      // reserved bottom space
-    const FONT_SIZE = 8;       // larger text
-    const TOP_PADDING = 6;
-    const BOTTOM_PADDING = 4;
+    const FONT_SIZE = 9;
+    const TOP_PADDING = 2;
+    const TEXT_BAND = 12;
+    const TEXT_GAP = 4;
+    // QR
+    const BOTTOM_PADDING = 3;
 
     let labelPosition = startIndex - 1;
 
@@ -198,11 +199,11 @@ app.post('/api/generate-sheet', async (req, res) => {
 
       const qrImage = await pdfDoc.embedPng(qrBytes);
 
-      const qrAvailable = LABEL - TEXT_BAND - TOP_PADDING - BOTTOM_PADDING;
+      const qrAvailable = LABEL - TOP_PADDING - TEXT_BAND - TEXT_GAP - BOTTOM_PADDING;
       const qrSize = qrAvailable;
 
       const qrX = x + (LABEL - qrSize) / 2 + 2.83;
-      const qrY = y + TEXT_BAND + BOTTOM_PADDING;
+      const qrY = y + BOTTOM_PADDING;
 
       page.drawImage(qrImage, {
         x: qrX,
@@ -213,10 +214,10 @@ app.post('/api/generate-sheet', async (req, res) => {
 
       /* --- TEXT --- */
       const textWidth = font.widthOfTextAtSize(code, FONT_SIZE);
-      const textHeight = FONT_SIZE;
+      
 
       // Center text vertically inside TEXT_BAND
-      const textY = y + (TEXT_BAND - textHeight) / 2 + 2;
+      const textY = y + BOTTOM_PADDING + qrSize + TEXT_GAP;
 
       page.drawText(code, {
         x: x + (LABEL - textWidth) / 2 + 2.83,
