@@ -157,8 +157,8 @@ app.post('/api/generate-sheet', async (req, res) => {
 
     const TEXT_BAND = 12;      // reserved bottom space
     const FONT_SIZE = 8;       // larger text
-    const TOP_PADDING = 8;
-    const BOTTOM_PADDING = 2;
+    const TOP_PADDING = 6;
+    const BOTTOM_PADDING = 3;
 
     let labelPosition = startIndex - 1;
 
