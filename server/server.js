@@ -55,7 +55,7 @@ const LABELS_PER_PAGE = 63;
 
 const MARGIN_L = 22.68;   // your final calibrated value
 const MARGIN_T = 35.43;   // your final calibrated value
-const GAP_X = 8.50;
+const GAP_X = 8.97;
 const GAP_Y = 8.50;
 
 /* ---------------------------
